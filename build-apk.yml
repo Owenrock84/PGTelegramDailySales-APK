@@ -1,0 +1,21 @@
+name: Build Android APK
+on: [workflow_dispatch]
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build APK with official Buildozer container
+        run: |
+          docker pull ghcr.io/kivy/buildozer:latest
+          docker run --rm \
+            --volume "$GITHUB_WORKSPACE:/home/user/hostcwd" \
+            ghcr.io/kivy/buildozer:latest android debug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: PGTelegramReporter-APK
+          path: bin/*.apk
+          if-no-files-found: error
